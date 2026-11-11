@@ -1,0 +1,15 @@
+# Old Lovable routes -> closest new page (301 keeps search ranking)
+/book-session       /get-a-quote   301
+/price-estimator    /get-a-quote   301
+/contact            /get-a-quote   301
+/pricing            /services      301
+/shop               /services      301
+/blog               /              301
+/blog/*             /              301
+/auth               /              301
+/my-bookings        /              301
+/cookie-policy      /privacy-policy 301
+/terms-of-service   /privacy-policy 301
+/refund-policy      /              301
+/accessibility      /              301
+/disclaimer         /              301
