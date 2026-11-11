@@ -1,5 +1,5 @@
 // Static site generator for noworriesfix.com. No dependencies: `node build.mjs` writes ./dist
-import { mkdirSync, writeFileSync, copyFileSync, rmSync, existsSync } from "node:fs";
+import { mkdirSync, writeFileSync, copyFileSync, cpSync, rmSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 
 const SITE = "https://noworriesfix.com";
@@ -45,10 +45,9 @@ const NAV = [
   ["/service-areas/fredericksburg-va", "Service Area"], ["/about", "About"], ["/get-a-quote", "Get a Quote"],
 ];
 
-function layout({ path, title, description, body, schema = [] }) {
+function head({ path, title, description, schema = [], styles = '<link rel="stylesheet" href="/styles.css">' }) {
   const canonical = SITE + (path === "/" ? "/" : path);
   const ld = { "@context": "https://schema.org", "@graph": [orgSchema, ...schema] };
-  const nav = NAV.map(([href, label]) => `<a href="${href}"${href === path ? ' aria-current="page"' : ""}>${label}</a>`).join("");
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -65,11 +64,16 @@ function layout({ path, title, description, body, schema = [] }) {
 <meta property="og:image" content="${SITE}/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/styles.css">
+${styles}
 <script type="application/ld+json">${JSON.stringify(ld)}</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=${GA_ID}"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${GA_ID}');</script>
-</head>
+</head>`;
+}
+
+function layout({ path, title, description, body, schema = [] }) {
+  const nav = NAV.map(([href, label]) => `<a href="${href}"${href === path ? ' aria-current="page"' : ""}>${label}</a>`).join("");
+  return `${head({ path, title, description, schema })}
 <body>
 <a class="skip" href="#main">Skip to main content</a>
 <header class="site"><div class="wrap">
@@ -143,70 +147,244 @@ const faqHtml = FAQ.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p>
 
 const pages = {};
 
-pages["/"] = layout({
+// Homepage: a scroll-driven page with its own chrome (no shared header/footer).
+// Markup lives here; styles, script and images live in src/home/. The engine
+// (src/home/scrollcraft.*) is vendored from nateherkai/scroll-craft, MIT.
+const HOME_SMS = `sms:${BIZ.tel}?&body=${encodeURIComponent("Hi, I'd like a flat-price quote for TV mounting. Photos attached:")}`;
+// One entry per SERVICES row, same order. `amount` is the example the price tag shows.
+const HOME_JOBS = [
+  { img: "job-tv.jpg", h: 880, alt: "A TV mounted level on a slate-blue wall above an oak console.", job: "TV mounting", amount: 150, line: "TV mounting, one TV", cta: "Price this one" },
+  { img: "job-assembly.jpg", h: 1000, alt: "A half-assembled oak dresser on a bedroom floor with its last drawer beside it.", job: "Furniture assembly", amount: 95, line: "Furniture assembly, one piece", cta: "Price this one" },
+  { img: "job-patch.jpg", h: 1000, alt: "A freshly filled and sanded drywall patch on a blue wall, putty knife resting on the baseboard.", job: "Drywall patch", amount: 120, line: "Drywall patch, one patch", cta: "Price this one" },
+  // One window is under the $95 visit minimum, so the example prices three.
+  { img: "job-blinds.jpg", h: 1000, alt: "New white blinds half lowered in a window at dusk.", job: "Blinds, 3 windows", amount: 120, line: "Blinds, three windows at $40", cta: "Price three windows" },
+];
+const homeJobs = SERVICES.map((s, i) => {
+  const j = HOME_JOBS[i];
+  return `        <article class="nw-job">
+          <div class="nw-job__img"><img src="/home/img/${j.img}" width="800" height="${j.h}" alt="${esc(j.alt)}" loading="lazy"></div>
+          <h3>${esc(s.name)}</h3>
+          <p class="nw-job__price">${esc(s.price)}</p>
+          <p class="nw-job__note">${esc(s.note)}</p>
+          <button class="nw-pick" type="button" aria-pressed="${i === 0}" data-nw-pick data-job="${esc(j.job)}" data-amount="${j.amount}" data-line="${esc(j.line)}" data-idle="${esc(j.cta)}">${i === 0 ? "On the tag" : esc(j.cta)}</button>
+        </article>`;
+}).join("\n");
+const HOME_LINKS = [
+  ["/services", "Services &amp; prices"], ["/tv-mounting-fredericksburg-va", "TV mounting"], ["/landlords", "Landlords"],
+  ["/service-areas/fredericksburg-va", "Fredericksburg &amp; Stafford"], ["/service-areas/northern-virginia", "Northern Virginia"],
+  ["/service-areas/washington-dc", "Washington, DC"], ["/about", "About"], ["/get-a-quote", "Get a quote"],
+];
+
+pages["/"] = `${head({
   path: "/",
   title: "Flat-Price Handyman in Fredericksburg, VA | No Worries",
   description: "Text a photo, get one flat price back, usually the same day. TV mounting, assembly, drywall and more in Fredericksburg, Stafford & Spotsylvania.",
   schema: [faqSchema],
-  body: `<section class="hero"><div class="wrap">
-  <h1>Text us a photo. Get a flat price today. That's the price you pay.</h1>
-  <p class="lead">No hourly meter. No "we'll see when we get there." No three-day wait for a callback. You'll know the number before anyone touches your house.</p>
-  ${ctaButtons()}
-  <p class="micro">Fredericksburg, Stafford &amp; Spotsylvania · Most quotes back same day · ${BIZ.hours}</p>
-</div></section>
+  styles: '<link rel="preload" as="image" href="/home/img/wall-before.jpg">\n<link rel="stylesheet" href="/home/scrollcraft.css">\n<link rel="stylesheet" href="/home/home.css">',
+})}
+<body>
 
-<section><div class="wrap">
-  <h2>How you get a price without anyone coming out</h2>
-  <div class="steps">
-    <div class="step"><h3>Send a photo</h3><p>Text ${BIZ.phone} or upload here. Thirty seconds. Bad lighting is fine.</p></div>
-    <div class="step"><h3>Get a flat price back</h3><p>In writing, usually the same day. One number: not a range, not an "estimate," not a starting-at.</p></div>
-    <div class="step"><h3>We show up and do the work</h3><p>The price doesn't move. If we find something hidden behind the wall, we stop and re-quote before we touch it. Your call.</p></div>
+<a class="nw-skip" href="#main">Skip to main content</a>
+
+<header class="nw-bar">
+  <a class="nw-mark" href="/" aria-label="No Worries Home Improvements, top of page">No Worries<small>Home Improvements</small></a>
+  <div class="nw-bar__right">
+    <a class="nw-link nw-bar__tel" href="${TEL}">${BIZ.phone}</a>
+    <a class="nw-btn" data-nw-sms href="${HOME_SMS}">Text a photo</a>
   </div>
-</div></section>
+</header>
 
-<section class="alt"><div class="wrap">
-  <div class="promise">
-    <h2>The Flat Price Promise</h2>
-    <p>The number we quote is the number on your invoice.</p>
-    <p>Not "about." Not "plus materials." Not "depending on what we find." If the job is what the photo showed, the price is what we said.</p>
-    <p>Two exceptions, and we'll tell you about both before we start work, not after:</p>
-    <ul>
-      <li><strong>You add work.</strong> Different job, new price, quoted the same way.</li>
-      <li><strong>Something's hidden.</strong> Rot behind the tile, a surprise in the wall. We stop, show you a photo, and quote it. You decide whether we keep going.</li>
-    </ul>
-    <p>That's it. That's the whole policy.</p>
+<!-- The held price. Decorative duplicate of figures that exist as real text in
+     the rail and the invoice, so it is hidden from assistive tech. -->
+<div class="nw-tag" data-nw-tag aria-hidden="true">
+  <div class="nw-tag__body">
+    <span class="nw-tag__k" data-nw-status>Example quote</span>
+    <span class="nw-tag__v" data-nw-amount>$150</span>
+    <span class="nw-tag__j" data-nw-jobname>TV mounting</span>
   </div>
-</div></section>
+</div>
 
-<section><div class="wrap">
-  <h2>What we fix</h2>
-  <p class="sub">Starting prices for the most common jobs. Your photo quote is one flat number.</p>
-  <div class="grid">
-    ${SERVICES.map((s) => `<div class="card"><h3>${s.name}</h3><div class="price">${s.price}</div><p>${s.note}</p></div>`).join("")}
-  </div>
-  <h3 style="margin-top:28px">Also on the list</h3>
-  <ul class="tags">${OTHER_WORK.map((w) => `<li>${w}</li>`).join("")}</ul>
-  <p><strong>Not sure if it's on the list? Send the photo anyway.</strong> If we can't do it, we'll tell you who can.</p>
-  <p><a href="/services">See all services and add-on prices →</a></p>
-</div></section>
+<main id="main">
+  <span id="top"></span>
 
-<section class="alt"><div class="wrap">
-  <h2>Managing properties? You don't need to be there.</h2>
-  <p class="prose">Your tenant texts us the photo. We quote you the flat price. You approve by text. We coordinate access, do the work, and send you photos when it's done. One invoice. One point of contact.</p>
-  <p><a class="btn btn-primary" href="/landlords">Landlords &amp; property managers →</a></p>
-</div></section>
+  <!-- 1 · RECOGNITION: layered hero -->
+  <section class="nw-hero" data-sc-act="pin" data-sc-span="2" data-nw-status="Example quote">
+    <div data-sc-stage>
+      <img class="nw-plane nw-plane--wall" src="/home/img/wall-before.jpg" width="2200" height="1228" alt="A living room in the evening. A new TV still in its box leans against a slate-blue wall beside a lamp-lit console, with the wall mount lying unopened on top.">
+      <div class="nw-bloom" aria-hidden="true"></div>
+      <div class="nw-hero__scrim" aria-hidden="true"></div>
+      <img class="nw-plane nw-plane--bag" src="/home/img/toolbag.png" width="560" height="546" alt="">
+      <img class="nw-plane nw-plane--phone" src="/home/img/phone.png" width="480" height="798" alt="">
 
-<section><div class="wrap">
-  <h2>Where we work</h2>
-  <p class="prose">Based in Fredericksburg, VA. We serve ${AREA_CITIES.join(", ")}. Northern Virginia and DC jobs are quoted case by case. Outside that? Send the photo anyway; if it's close, we'll tell you.</p>
-</div></section>
+      <div class="nw-hero__copy" data-sc-cue="0 0.5 0">
+        <h1 class="sc-display sc-display--xl">Text us a photo. Get a flat price today.</h1>
+        <p class="sc-lede">That's the price you pay. You'll know the number before anyone touches your house.</p>
+        <div class="nw-actions">
+          <a class="nw-btn" data-nw-sms href="${HOME_SMS}">Text a photo</a>
+          <a class="nw-link" href="${TEL}">Call ${BIZ.phone}</a>
+        </div>
+      </div>
 
-<section class="alt"><div class="wrap prose">
-  <h2>Questions people ask before they text</h2>
-  ${faqHtml}
-</div></section>
-${ctaBand()}`,
-});
+      <div class="nw-hero__beat" data-sc-cue="0.64 1 0.1 0.03">
+        <p class="sc-display sc-display--md">Thirty seconds. Bad lighting is fine.</p>
+        <p class="sc-body">No hourly meter. No three-day wait for a callback.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 · EASE: three lines cross over -->
+  <section class="nw-steps" data-sc-act="pin" data-sc-span="2.2" data-nw-status="Quoted from a photo">
+    <div data-sc-stage>
+      <div class="nw-steps__grid">
+        <figure class="nw-print">
+          <img src="/home/img/wall-before.jpg" width="2200" height="1228" alt="" loading="lazy">
+          <figcaption>The photo you sent</figcaption>
+        </figure>
+        <div class="nw-steps__copy">
+          <h2 data-sc-cue="0 1 0 0">How you get a price without anyone coming out</h2>
+          <div class="nw-step" data-sc-cue="0 0.36 0">
+            <p class="sc-display sc-display--lg">Send a photo.</p>
+            <p class="sc-lede">Text ${BIZ.phone} or upload online. A wide shot plus a close-up usually tells us everything.</p>
+          </div>
+          <div class="nw-step" data-sc-cue="0.3 0.68">
+            <p class="sc-display sc-display--lg" data-sc-kinetic="lines">Get a flat price back.</p>
+            <p class="sc-lede">In writing, usually the same day. One number: not a range, not an estimate, not a starting-at.</p>
+          </div>
+          <div class="nw-step" data-sc-cue="0.62 1 0.1 0.03">
+            <p class="sc-display sc-display--lg">We show up and do the work.</p>
+            <p class="sc-lede">${BIZ.hours}. Standard mounting hardware is included with installs.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 · DOUBT: the one part that reads like a document -->
+  <section class="sc-section nw-doubt" data-sc-act="flow" data-nw-status="Held. Your call">
+    <div class="sc-wrap">
+      <figure data-sc-in>
+        <img src="/home/img/behind-wall.jpg" width="1500" height="1125" alt="A torch held up to a neat inspection hole in drywall, lighting an old water stain on the stud behind it." loading="lazy">
+      </figure>
+      <div data-sc-in data-sc-stagger="70">
+        <h2 class="sc-display sc-display--lg">What if something's hidden?</h2>
+        <p class="sc-lede">We stop, photograph it, and quote the extra before doing anything. You decide. You never get a surprise on the invoice.</p>
+        <ul class="nw-excepts">
+          <li><strong>You add work.</strong> Different job, new price, quoted the same way.</li>
+          <li><strong>Something's hidden.</strong> Rot behind the tile, a surprise in the wall. We stop, show you a photo, and quote it. You decide whether we keep going.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · PAYOFF: a wipe is a change of state -->
+  <section class="nw-wipe" data-sc-act="pin" data-sc-span="2" data-nw-status="Done. Same price">
+    <div data-sc-stage>
+      <img src="/home/img/wall-before.jpg" width="2200" height="1228" alt="" loading="lazy">
+      <figure data-sc-reveal="right" data-sc-reveal-at="0.12 0.62">
+        <img src="/home/img/wall-after.jpg" width="2200" height="1228" alt="The same wall afterwards: the TV is mounted level above the console, the boxes and cables are gone." loading="lazy">
+      </figure>
+      <div class="nw-wipe__scrim" aria-hidden="true"></div>
+      <div class="sc-copy sc-copy--lead" data-sc-cue="0.5 1 0.12 0.03">
+        <h2 class="sc-display sc-display--lg" data-sc-kinetic="lines">The price doesn't move.</h2>
+        <p class="sc-lede">Stud-mounted, level, cords tidied. If the job is what the photo showed, the price is what we said.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · RANGE: lateral travel reads as options -->
+  <section class="nw-range" data-sc-act="pan" data-sc-span="2.8" data-nw-status="Pick a job">
+    <div data-sc-stage>
+      <div class="nw-rail" data-sc-pan="0.04">
+        <div class="nw-rail__lead">
+          <h2 class="sc-display sc-display--lg">What we fix</h2>
+          <p class="sc-body">Starting prices for the most common jobs. Your photo quote is one flat number. Pick one and the tag follows you to the invoice.</p>
+        </div>
+
+${homeJobs}
+
+        <div class="nw-rail__note">
+          <h3>Also on the list</h3>
+          <ul>${OTHER_WORK.map((w) => `<li>${esc(w)}</li>`).join("")}</ul>
+          <p><strong>Not sure if it's on the list? Send the photo anyway.</strong> If we can't do it, we'll tell you who can.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 · TERMS: authored quiet before the peak -->
+  <section class="sc-section nw-terms" data-sc-act="flow" data-nw-status="Flat price">
+    <div class="sc-wrap">
+      <div class="nw-terms__top">
+        <div data-sc-in data-sc-stagger="60">
+          <h2 class="sc-display sc-display--lg">The number we quote is the number on your invoice.</h2>
+          <p class="sc-body">Not "about." Not "plus materials." Not "depending on what we find." Two exceptions, and we tell you about both before we start work, not after. That's the whole policy.</p>
+        </div>
+        <dl class="nw-facts" data-sc-in data-sc-stagger="50">
+          <div><dt>Managing properties? You don't need to be there.</dt><dd>Your tenant texts us the photo. We quote you the flat price. You approve by text. One invoice, one point of contact, photos when it's done.</dd></div>
+          <div><dt>Where we work</dt><dd>Fredericksburg, Stafford, Spotsylvania, King George and Caroline County. Northern Virginia and DC by quote.</dd></div>
+          <div><dt>More than one job</dt><dd>Two services get 8% off the base prices; three or more get 11% off. The minimum visit is $95.</dd></div>
+        </dl>
+      </div>
+
+      <div class="nw-faq" data-sc-in>
+        <h3>Questions people ask before they text</h3>
+        ${faqHtml}
+      </div>
+
+      <nav class="nw-pages" aria-label="Site pages" data-sc-in>
+        ${HOME_LINKS.map(([href, label]) => `<a class="nw-link" href="${href}">${label}</a>`).join("")}
+      </nav>
+    </div>
+  </section>
+
+  <!-- 7 · COMMITMENT: the tag lands on the invoice. Last element on the page. -->
+  <section class="nw-close" id="invoice" data-sc-act="pin" data-sc-span="3" data-nw-status="Total due">
+    <div data-sc-stage>
+      <div class="nw-close__grid">
+        <div class="nw-close__copy">
+          <div class="nw-close__pre" data-sc-cue="0 0.46 0">
+            <p class="sc-display sc-display--lg">Then the invoice arrives.</p>
+            <p class="sc-lede">One line is still blank.</p>
+          </div>
+          <div class="nw-close__main">
+            <h2 class="sc-display sc-display--lg" data-sc-cue="0.56">Send the photo. Get the price. Decide from there.</h2>
+            <p class="sc-lede" data-sc-cue="0.6">It takes thirty seconds and costs nothing. Worst case, you find out what the job actually costs.</p>
+            <div class="nw-actions" data-sc-cue="0.6" data-sc-rise="0">
+              <a class="nw-btn" data-nw-sms href="${HOME_SMS}">Text a photo</a>
+              <a class="nw-link" href="${TEL}">Call ${BIZ.phone}</a>
+              <a class="nw-link" href="/get-a-quote">Upload photos online</a>
+            </div>
+          </div>
+        </div>
+
+        <article class="nw-invoice" aria-label="Example invoice">
+          <header><strong>No Worries<br>Home Improvements</strong><span>Example invoice</span></header>
+          <dl>
+            <div><dt>Job</dt><dd data-nw-line>TV mounting, one TV</dd></div>
+            <div><dt>Quoted</dt><dd>From your photo, in writing</dd></div>
+            <div><dt>Changes on site</dt><dd>None. Job matched the photo.</dd></div>
+          </dl>
+          <div class="nw-invoice__total">
+            <span>Total due</span>
+            <div class="nw-slot" data-nw-slot><span class="nw-sr" data-nw-total>$150, the same as quoted</span></div>
+          </div>
+          <small>Example at a starting price. Your photo quote is one flat number for your job.</small>
+        </article>
+      </div>
+
+      <footer class="nw-foot">
+        <span>© ${new Date().getFullYear()} No Worries Home Improvements. Flat-price handyman work from a photo. Fredericksburg, VA.</span>
+        <span>${BIZ.hours}</span>
+        <span><a href="mailto:${BIZ.email}">${BIZ.email}</a> · <a href="/privacy-policy">Privacy policy</a></span>
+      </footer>
+    </div>
+  </section>
+
+</main>
+<script src="/home/scrollcraft.js"></script>
+<script src="/home/home.js"></script>
+</body>
+</html>`;
 
 pages["/services"] = layout({
   path: "/services",
@@ -407,6 +585,7 @@ for (const [path, html] of Object.entries(pages)) {
   writeFileSync(dest, html);
 }
 for (const f of ["styles.css", "favicon.svg", "og-image.png", "_redirects", "_headers", "robots.txt"]) copyFileSync(join("src", f), join(out, f));
+cpSync(join("src", "home"), join(out, "home"), { recursive: true });
 
 const urls = Object.keys(pages).filter((p) => p !== "/404");
 writeFileSync(join(out, "sitemap.xml"),
