@@ -132,6 +132,7 @@ const FAQ = [
   ["What if the job is bigger than the photo showed?", "We stop, photograph it, and quote the extra before doing anything. You decide. You never get a surprise on the invoice."],
   ["Do you charge for quotes?", "No. Photo quotes are free and there's no obligation."],
   ["Do you bring the hardware?", "Standard mounting hardware is included with installs. If a job needs special parts, they're listed in your quote before you approve."],
+  ["Is there a minimum?", "Yes: $95 per visit, which is also the price of our smallest standard job. Anything below that is quoted at $95."],
   ["Do you do multiple jobs in one visit?", "Yes, and it's cheaper. Two services get 8% off the base prices; three or more get 11% off."],
   ["What hours do you work?", `${BIZ.hours}. Send photos anytime and we'll reply during business hours.`],
   ["Where do you work?", "Fredericksburg, Stafford, Spotsylvania, King George and Caroline County. Northern Virginia and DC by quote; any travel charge is included in your flat price before you approve."],
@@ -226,6 +227,7 @@ pages["/services"] = layout({
       <tr><td>Blinds installation</td><td>$40 per window</td><td>Patio slider vertical +$85 · Tile/stone surround +$15 · High or stairwell window +$15 · Take down old blinds +$10 · Haul away +$45 per visit</td></tr>
     </tbody>
   </table>
+  <p class="prose" style="margin-top:14px"><strong>Visit minimum: $95.</strong> Smaller jobs are quoted at the minimum, never turned away.</p>
   <h2 style="margin-top:40px">Bundle and save</h2>
   <p class="prose">Two services in one visit: 8% off the base prices. Three or more: 11% off. Add-ons are never discounted. Example: TV mount + dresser assembly + trim patch is $365 separately, <strong>$325 together</strong>.</p>
   <h2 style="margin-top:40px">Other work we quote from photos</h2>

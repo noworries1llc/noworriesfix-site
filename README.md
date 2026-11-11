@@ -22,4 +22,4 @@ Static site for No Worries Home Improvements. No framework, no dependencies, no 
 - Insurance and license: the site makes no "insured" or "licensed" claim. Add one only once the policy/license exists.
 - Guarantee / warranty wording: not on the site yet; add once decided.
 - Proof: no job counts or ratings. Add real reviews (selected for "the price was what he quoted") and before/after photos captioned with the flat price.
-- Service minimum: rate card says $95, Airtable GO/NO-GO formula says $175. The site publishes neither until this is settled.
+- Service minimum settled at $95 (2026-11-11) and published. The Airtable Lead Intake "GO / NO-GO" formula still assumes $175; update it in the Airtable UI.
