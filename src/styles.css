@@ -58,6 +58,12 @@ h3{margin:0 0 6px;font-size:1.15rem}
 table.prices{width:100%;border-collapse:collapse;background:#fff;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line)}
 table.prices th,table.prices td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line)}
 table.prices th{background:#f2efe8;font-size:.9rem}
+@media (max-width:700px){
+  table.prices thead{display:none}
+  table.prices tr{display:block;border-bottom:1px solid var(--line);padding:10px 0}
+  table.prices td{display:block;border:0;padding:3px 16px}
+  table.prices td:first-child{font-weight:700}
+}
 .tags{display:flex;flex-wrap:wrap;gap:8px;padding:0;list-style:none}
 .tags li{background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:.95rem}
 
