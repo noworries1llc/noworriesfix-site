@@ -6,16 +6,15 @@ Static site for No Worries Home Improvements. No framework, no dependencies, no 
 - `node build.mjs` writes the site to `dist/`.
 - Old Lovable URLs forward via `src/_redirects`; security headers live in `src/_headers`.
 
-## Cloudflare settings (Git integration)
+## Cloudflare settings (Worker with static assets, Git-connected)
 
 | Setting | Value |
 |---|---|
-| Framework preset | None |
 | Build command | `node build.mjs` |
-| Build output directory | `dist` |
+| Deploy command | `npx wrangler deploy` |
 | Production branch | `main` |
 
-Cost: $0 on the free plan (static files only, no Functions, nothing scheduled).
+`wrangler.jsonc` tells the Worker to serve `./dist` and use `404.html` for missing pages. No Worker script runs; it's static files only, so it stays on the free plan with nothing scheduled.
 
 ## Open items before go-live
 
