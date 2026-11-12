@@ -22,7 +22,7 @@ ScrollCraft.mount(document.body);
     queued = false;
     var vh = innerHeight;
 
-    tag.classList.toggle('is-on', pinned(hero) > 0.6);
+    tag.classList.toggle('is-on', pinned(hero) > 0.5);
 
     var mid = vh * 0.5, status = lastStatus;
     for (var i = 0; i < zones.length; i++) {
@@ -31,7 +31,7 @@ ScrollCraft.mount(document.body);
     }
 
     var p = pinned(close);
-    var t = reduced ? (p > 0.4 ? 1 : 0) : ease(clamp01((p - 0.2) / 0.36));
+    var t = reduced ? (p > 0.4 ? 1 : 0) : ease(clamp01((p - 0.16) / 0.4));
     if (t > 0) {
       var a = tag.getBoundingClientRect(), b = slot.getBoundingClientRect();
       var homeX = a.left + a.width / 2 - dx, homeY = a.top + a.height / 2 - dy;
@@ -69,5 +69,32 @@ ScrollCraft.mount(document.body);
         a.href = a.href.split('body=')[0] + 'body=' + encodeURIComponent(body);
       });
     });
+  });
+})();
+
+/* The index sheet. Without JS the Menu link jumps to the page links instead. */
+(function () {
+  var menu = document.querySelector('[data-nw-menu]');
+  var opener = document.querySelector('[data-nw-menu-open]');
+  if (!menu.showModal) return;
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var timer;
+
+  function shut() { menu.classList.remove('is-open'); opener.setAttribute('aria-expanded', 'false'); }
+  function hide() { shut(); timer = setTimeout(function () { menu.close(); }, reduced ? 0 : 200); }
+
+  opener.setAttribute('aria-expanded', 'false');
+  opener.addEventListener('click', function (e) {
+    e.preventDefault();
+    clearTimeout(timer);
+    if (!menu.open) menu.showModal();
+    menu.offsetWidth; /* flush so the opening transition runs */
+    menu.classList.add('is-open');
+    opener.setAttribute('aria-expanded', 'true');
+  });
+  menu.addEventListener('cancel', function (e) { e.preventDefault(); hide(); });
+  menu.addEventListener('click', function (e) {
+    if (e.target === menu || e.target.closest('[data-nw-menu-close]')) hide();
+    else if (e.target.closest('a[href^="#"]')) { shut(); menu.close(); }
   });
 })();

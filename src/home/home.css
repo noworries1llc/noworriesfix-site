@@ -55,6 +55,77 @@
 .nw-bar__right { display: flex; align-items: center; gap: 1.25rem; }
 .nw-bar .nw-btn { min-height: 44px; font-size: .95rem; }
 
+/* ---- the index: a sheet from the invoice book ---- */
+html { scroll-behavior: auto; scrollbar-gutter: stable; }
+html:has(.nw-menu[open]) { overflow: hidden; }
+.nw-menu-open {
+  display: inline-flex; align-items: center; gap: .55em; min-height: 44px; padding: 0 .9rem;
+  border: 1px solid var(--sc-hairline-strong); border-radius: var(--nw-r);
+  font-weight: 500; font-size: .95rem; text-decoration: none;
+  transition: border-color 140ms var(--sc-ease-out), color 140ms var(--sc-ease-out);
+}
+.nw-menu-open i { /* three ruled lines, the last one short: a list */
+  width: 14px; height: 10px; flex: none;
+  background: linear-gradient(currentColor, currentColor) 0 0 / 100% 1.5px no-repeat,
+              linear-gradient(currentColor, currentColor) 0 50% / 100% 1.5px no-repeat,
+              linear-gradient(currentColor, currentColor) 0 100% / 55% 1.5px no-repeat;
+}
+@media (hover: hover) and (pointer: fine) { .nw-menu-open:hover { border-color: var(--sc-accent); color: var(--sc-accent); } }
+
+.nw-menu {
+  position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none;
+  margin: 0; padding: 72px var(--sc-gutter) 24px; border: 0; overflow: auto; overscroll-behavior: contain;
+  background: transparent; color: inherit;
+  transition: background-color 220ms var(--sc-ease-out), backdrop-filter 220ms var(--sc-ease-out);
+}
+.nw-menu::backdrop { background: transparent; }
+.nw-menu.is-open { background: color-mix(in oklab, var(--sc-canvas) 74%, transparent); backdrop-filter: blur(7px); }
+.nw-sheet {
+  --sc-ink: var(--nw-paper-ink); --sc-ink-soft: #55606B; --sc-hairline: rgb(27 31 36 / .14);
+  width: min(100%, 29rem); margin-left: auto; padding: clamp(1.1rem, 2.2vw, 1.8rem);
+  color: var(--sc-ink); background: var(--nw-paper); border-radius: 4px; box-shadow: var(--sc-e3);
+  font-variant-numeric: tabular-nums;
+  transform-origin: 82% 0; opacity: 0; translate: 0 -22px; rotate: -5deg; scale: .96;
+  transition: opacity 200ms var(--sc-ease-out), translate 260ms var(--sc-ease-out), rotate 260ms var(--sc-ease-out), scale 260ms var(--sc-ease-out);
+}
+@media (min-width: 1100px) { .nw-sheet { margin-right: max(0px, calc((100vw - var(--sc-maxw)) / 2 - var(--sc-gutter))); } }
+.nw-menu.is-open .nw-sheet { opacity: 1; translate: none; rotate: -1.2deg; scale: 1; }
+.nw-sheet header { display: grid; grid-template-columns: 1fr auto; align-items: start; gap: .2rem 1rem; padding-bottom: var(--sc-4); border-bottom: 2px solid var(--sc-ink); }
+.nw-sheet header strong { font-family: var(--sc-font-display); font-weight: 800; letter-spacing: -0.02em; font-size: 1.05rem; line-height: 1.1; }
+.nw-sheet header span { grid-column: 1; font-size: .72rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--sc-ink-soft); }
+.nw-sheet__x {
+  grid-column: 2; grid-row: 1 / span 2; min-height: 44px; margin: -10px -8px 0 0; padding: 0 8px; border: 0; background: none; cursor: pointer;
+  color: var(--sc-ink); font-size: .72rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  text-decoration: underline; text-underline-offset: .3em;
+}
+.nw-lines { list-style: none; margin: 0; padding: 0; counter-reset: line; }
+.nw-lines li { counter-increment: line; border-bottom: 1px solid var(--sc-hairline); }
+.nw-lines a {
+  display: flex; align-items: baseline; gap: .6rem; min-height: 48px; padding-block: .72rem;
+  color: inherit; text-decoration: none;
+  transition: translate 160ms var(--sc-ease-out), color 160ms var(--sc-ease-out);
+}
+.nw-lines a::before { content: counter(line, decimal-leading-zero); flex: none; width: 1.6rem; font-size: .72rem; font-weight: 600; letter-spacing: .04em; color: var(--sc-ink-soft); transition: color 160ms var(--sc-ease-out); }
+.nw-lines__l { font-family: var(--sc-font-display); font-weight: 700; font-size: 1.12rem; letter-spacing: -0.02em; line-height: 1.15; }
+.nw-lines__dots { flex: 1; min-width: 1rem; height: 0; translate: 0 -.18em; border-bottom: 2px dotted rgb(27 31 36 / .3); transition: border-color 160ms var(--sc-ease-out); }
+.nw-lines__d { flex: none; font-size: .86rem; color: var(--sc-ink-soft); }
+@media (hover: hover) and (pointer: fine) {
+  .nw-lines a:hover { translate: 5px 0; }
+  .nw-lines a:hover::before, .nw-lines a:hover .nw-lines__d { color: var(--sc-ink); }
+  .nw-lines a:hover .nw-lines__dots { border-color: #B87A14; }
+}
+.nw-sheet :focus-visible { outline: 2px solid #B87A14; outline-offset: 3px; border-radius: 3px; }
+.nw-sheet__jump { display: flex; flex-wrap: wrap; align-items: center; gap: 0 1.1rem; margin: var(--sc-4) 0 0; font-size: .86rem; }
+.nw-sheet__jump span { width: 100%; font-size: .72rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--sc-ink-soft); }
+.nw-sheet__jump a { display: inline-flex; align-items: center; min-height: 40px; color: inherit; text-underline-offset: .25em; }
+.nw-sheet__total { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: var(--sc-4); padding-top: var(--sc-4); border-top: 2px solid var(--sc-ink); }
+.nw-sheet__total > span { font-family: var(--sc-font-display); font-weight: 700; font-size: 1.05rem; line-height: 1.2; }
+.nw-sheet small { display: block; margin-top: var(--sc-4); color: var(--sc-ink-soft); font-size: .78rem; }
+.nw-sheet small a { color: inherit; }
+/* lines are written onto the sheet one after another */
+.nw-lines li, .nw-sheet__jump, .nw-sheet__total, .nw-sheet small { opacity: 0; translate: 0 8px; transition: opacity 220ms var(--sc-ease-out), translate 220ms var(--sc-ease-out); }
+.nw-menu.is-open :is(.nw-lines li, .nw-sheet__jump, .nw-sheet__total, .nw-sheet small) { opacity: 1; translate: none; transition-delay: calc(90ms + var(--i) * 26ms); }
+
 /* ---- the held price (signature move) ---- */
 .nw-tag {
   position: fixed; right: var(--sc-gutter); bottom: 22px; z-index: 55;
@@ -149,6 +220,11 @@
 .nw-wipe [data-sc-stage] > img, .nw-wipe figure, .nw-wipe figure img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 62%; margin: 0; }
 .nw-wipe__scrim { position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(70vw 70vh at 8% 88%, color-mix(in oklab, var(--sc-canvas) 96%, transparent), color-mix(in oklab, var(--sc-canvas) 80%, transparent) 42%, transparent 74%); }
+/* a laser-level line rides the wipe edge, so the sweep reads over bare wall too */
+.nw-wipe__level { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; pointer-events: none;
+  left: calc((1 - clamp(0, (var(--sc-p) - .08) / .44, 1)) * 100%);
+  background: var(--sc-accent); box-shadow: 0 0 14px 2px rgb(232 163 58 / .55);
+  opacity: calc(min(1, (var(--sc-p) - .08) * 30) * min(1, (.52 - var(--sc-p)) * 30)); }
 .nw-wipe .sc-copy { max-width: min(36rem, 56vw); }
 .nw-wipe .sc-lede { margin-top: var(--sc-4); }
 
@@ -232,6 +308,15 @@
 @media (max-width: 760px) {
   :root { --nw-tag-w: 128px; --nw-tag-h: 62px; }
   .nw-bar__tel { display: none; }
+  .nw-bar__right { gap: .6rem; }
+  .nw-mark small { white-space: nowrap; font-size: .62rem; }
+  .nw-menu-open { padding: 0 .7rem; }
+  .nw-bar .nw-btn { padding: 0 .9rem; }
+  .nw-menu { padding: 64px 12px 16px; }
+  .nw-sheet { width: 100%; }
+  .nw-menu.is-open .nw-sheet { rotate: -.6deg; }
+  .nw-lines a { padding-block: .6rem; }
+  .nw-lines__l { font-size: 1.02rem; }
   .nw-tag { right: auto; left: 12px; bottom: 12px; }
   .nw-tag__body { padding: 6px 8px 6px 24px; }
   .nw-tag__body::before { left: 8px; width: 8px; height: 8px; margin-top: -4px; }
@@ -300,6 +385,10 @@
   .nw-plane--bag { translate: none; scale: 1.05; }
   .nw-bloom, .nw-print, .nw-doubt figure img { translate: none; }
   .nw-tag__body { transition: none; }
+  .nw-wipe__level { display: none; }
+  .nw-menu, .nw-sheet, .nw-lines li, .nw-lines a, .nw-sheet__jump, .nw-sheet__total, .nw-sheet small { transition: none; }
+  .nw-sheet { translate: none; scale: 1; rotate: -1.2deg; }
+  .nw-lines li, .nw-sheet__jump, .nw-sheet__total, .nw-sheet small { translate: none; }
 }
 
 /* ---- links to the rest of the site ---- */
