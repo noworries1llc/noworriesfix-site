@@ -153,11 +153,11 @@ const pages = {};
 const HOME_SMS = `sms:${BIZ.tel}?&body=${encodeURIComponent("Hi, I'd like a flat-price quote for TV mounting. Photos attached:")}`;
 // One entry per SERVICES row, same order. `amount` is the example the price tag shows.
 const HOME_JOBS = [
-  { img: "job-tv.jpg", h: 880, alt: "A TV mounted level on a slate-blue wall above an oak console.", job: "TV mounting", amount: 150, line: "TV mounting, one TV", cta: "Price this one" },
-  { img: "job-assembly.jpg", h: 1000, alt: "A half-assembled oak dresser on a bedroom floor with its last drawer beside it.", job: "Furniture assembly", amount: 95, line: "Furniture assembly, one piece", cta: "Price this one" },
-  { img: "job-patch.jpg", h: 1000, alt: "A freshly filled and sanded drywall patch on a blue wall, putty knife resting on the baseboard.", job: "Drywall patch", amount: 120, line: "Drywall patch, one patch", cta: "Price this one" },
+  { img: "job-tv.jpg", h: 880, alt: "A TV mounted level on a slate-blue wall above an oak console.", job: "TV mounting", amount: 150, line: "TV mounting, one TV", cta: "Put it on the tag" },
+  { img: "job-assembly.jpg", h: 1000, alt: "A half-assembled oak dresser on a bedroom floor with its last drawer beside it.", job: "Furniture assembly", amount: 95, line: "Furniture assembly, one piece", cta: "Put it on the tag" },
+  { img: "job-patch.jpg", h: 1000, alt: "A freshly filled and sanded drywall patch on a blue wall, putty knife resting on the baseboard.", job: "Drywall patch", amount: 120, line: "Drywall patch, one patch", cta: "Put it on the tag" },
   // One window is under the $95 visit minimum, so the example prices three.
-  { img: "job-blinds.jpg", h: 1000, alt: "New white blinds half lowered in a window at dusk.", job: "Blinds, 3 windows", amount: 120, line: "Blinds, three windows at $40", cta: "Price three windows" },
+  { img: "job-blinds.jpg", h: 1000, alt: "New white blinds half lowered in a window at dusk.", job: "Blinds, 3 windows", amount: 120, line: "Blinds, three windows at $40", cta: "Put 3 windows on the tag" },
 ];
 const homeJobs = SERVICES.map((s, i) => {
   const j = HOME_JOBS[i];
@@ -169,11 +169,18 @@ const homeJobs = SERVICES.map((s, i) => {
           <button class="nw-pick" type="button" aria-pressed="${i === 0}" data-nw-pick data-job="${esc(j.job)}" data-amount="${j.amount}" data-line="${esc(j.line)}" data-idle="${esc(j.cta)}">${i === 0 ? "On the tag" : esc(j.cta)}</button>
         </article>`;
 }).join("\n");
+// [href, label, what the index sheet prints at the end of the line]
 const HOME_LINKS = [
-  ["/services", "Services &amp; prices"], ["/tv-mounting-fredericksburg-va", "TV mounting"], ["/landlords", "Landlords"],
-  ["/service-areas/fredericksburg-va", "Fredericksburg &amp; Stafford"], ["/service-areas/northern-virginia", "Northern Virginia"],
-  ["/service-areas/washington-dc", "Washington, DC"], ["/about", "About"], ["/get-a-quote", "Get a quote"],
+  ["/services", "Services &amp; prices", "every job"],
+  ["/tv-mounting-fredericksburg-va", "TV mounting", SERVICES[0].price.replace(/ per .*/, "").toLowerCase()],
+  ["/landlords", "Landlords", "approve by text"],
+  ["/service-areas/fredericksburg-va", "Fredericksburg &amp; Stafford", "home base"],
+  ["/service-areas/northern-virginia", "Northern Virginia", "by quote"],
+  ["/service-areas/washington-dc", "Washington, DC", "by quote"],
+  ["/about", "About", "who shows up"],
+  ["/get-a-quote", "Upload photos online", "free"],
 ];
+const HOME_JUMPS = [["#how", "How it works"], ["#prices", "Prices"], ["#terms", "The fine print"], ["#invoice", "The invoice"]];
 
 pages["/"] = `${head({
   path: "/",
@@ -190,9 +197,31 @@ pages["/"] = `${head({
   <a class="nw-mark" href="/" aria-label="No Worries Home Improvements, top of page">No Worries<small>Home Improvements</small></a>
   <div class="nw-bar__right">
     <a class="nw-link nw-bar__tel" href="${TEL}">${BIZ.phone}</a>
+    <a class="nw-menu-open" href="#pages" aria-haspopup="dialog" data-nw-menu-open><i aria-hidden="true"></i>Menu</a>
     <a class="nw-btn" data-nw-sms href="${HOME_SMS}">Text a photo</a>
   </div>
 </header>
+
+<!-- The index: the site's pages printed as a sheet from the invoice book.
+     Without JavaScript the Menu link jumps to the same links in the page. -->
+<dialog class="nw-menu" aria-labelledby="nw-menu-title" data-nw-menu>
+  <div class="nw-sheet">
+    <header>
+      <strong>No Worries<br>Home Improvements</strong>
+      <span id="nw-menu-title">Index</span>
+      <button class="nw-sheet__x" type="button" data-nw-menu-close>Close</button>
+    </header>
+    <ol class="nw-lines">
+      ${HOME_LINKS.map(([href, label, detail], i) => `<li style="--i:${i}"><a href="${href}"><span class="nw-lines__l">${label}</span><span class="nw-lines__dots" aria-hidden="true"></span><span class="nw-lines__d">${detail}</span></a></li>`).join("\n      ")}
+    </ol>
+    <p class="nw-sheet__jump" style="--i:${HOME_LINKS.length}"><span>On this page</span>${HOME_JUMPS.map(([href, label]) => `<a href="${href}">${label}</a>`).join("")}</p>
+    <div class="nw-sheet__total" style="--i:${HOME_LINKS.length + 1}">
+      <span>Fastest way to a price</span>
+      <a class="nw-btn" data-nw-sms href="${HOME_SMS}">Text a photo</a>
+    </div>
+    <small style="--i:${HOME_LINKS.length + 2}"><a href="${TEL}">${BIZ.phone}</a> · ${BIZ.hours}</small>
+  </div>
+</dialog>
 
 <!-- The held price. Decorative duplicate of figures that exist as real text in
      the rail and the invoice, so it is hidden from assistive tech. -->
@@ -208,7 +237,7 @@ pages["/"] = `${head({
   <span id="top"></span>
 
   <!-- 1 · RECOGNITION: layered hero -->
-  <section class="nw-hero" data-sc-act="pin" data-sc-span="2" data-nw-status="Example quote">
+  <section class="nw-hero" data-sc-act="pin" data-sc-span="2.2" data-nw-status="Example quote">
     <div data-sc-stage>
       <img class="nw-plane nw-plane--wall" src="/home/img/wall-before.jpg" width="2200" height="1228" alt="A living room in the evening. A new TV still in its box leans against a slate-blue wall beside a lamp-lit console, with the wall mount lying unopened on top.">
       <div class="nw-bloom" aria-hidden="true"></div>
@@ -216,24 +245,24 @@ pages["/"] = `${head({
       <img class="nw-plane nw-plane--bag" src="/home/img/toolbag.png" width="560" height="546" alt="">
       <img class="nw-plane nw-plane--phone" src="/home/img/phone.png" width="480" height="798" alt="">
 
-      <div class="nw-hero__copy" data-sc-cue="0 0.5 0">
+      <div class="nw-hero__copy" data-sc-cue="0 0.46 0 0.35">
         <h1 class="sc-display sc-display--xl">Text us a photo. Get a flat price today.</h1>
-        <p class="sc-lede">That's the price you pay. You'll know the number before anyone touches your house.</p>
+        <p class="sc-lede">And that's the price you pay. You'll have the number in writing before anyone sets foot in your house.</p>
         <div class="nw-actions">
           <a class="nw-btn" data-nw-sms href="${HOME_SMS}">Text a photo</a>
           <a class="nw-link" href="${TEL}">Call ${BIZ.phone}</a>
         </div>
       </div>
 
-      <div class="nw-hero__beat" data-sc-cue="0.64 1 0.1 0.03">
-        <p class="sc-display sc-display--md">Thirty seconds. Bad lighting is fine.</p>
-        <p class="sc-body">No hourly meter. No three-day wait for a callback.</p>
+      <div class="nw-hero__beat" data-sc-cue="0.54 1 0.14 0.03">
+        <p class="sc-display sc-display--md">It takes thirty seconds. Bad lighting is fine.</p>
+        <p class="sc-body">No site visit. No hourly meter. No three-day wait for a callback.</p>
       </div>
     </div>
   </section>
 
   <!-- 2 · EASE: three lines cross over -->
-  <section class="nw-steps" data-sc-act="pin" data-sc-span="2.2" data-nw-status="Quoted from a photo">
+  <section class="nw-steps" id="how" data-sc-act="pin" data-sc-span="3" data-nw-status="Photo quote">
     <div data-sc-stage>
       <div class="nw-steps__grid">
         <figure class="nw-print">
@@ -241,18 +270,18 @@ pages["/"] = `${head({
           <figcaption>The photo you sent</figcaption>
         </figure>
         <div class="nw-steps__copy">
-          <h2 data-sc-cue="0 1 0 0">How you get a price without anyone coming out</h2>
-          <div class="nw-step" data-sc-cue="0 0.36 0">
+          <h2 data-sc-cue="0 1 0 0">A price, without anyone coming out</h2>
+          <div class="nw-step" data-sc-cue="0 0.35 0 0.2">
             <p class="sc-display sc-display--lg">Send a photo.</p>
-            <p class="sc-lede">Text ${BIZ.phone} or upload online. A wide shot plus a close-up usually tells us everything.</p>
+            <p class="sc-lede">Text ${BIZ.phone} or upload online. One wide shot and one close-up usually tell us everything.</p>
           </div>
-          <div class="nw-step" data-sc-cue="0.3 0.68">
+          <div class="nw-step" data-sc-cue="0.33 0.68 0.2 0.2">
             <p class="sc-display sc-display--lg" data-sc-kinetic="lines">Get a flat price back.</p>
-            <p class="sc-lede">In writing, usually the same day. One number: not a range, not an estimate, not a starting-at.</p>
+            <p class="sc-lede">In writing, usually the same day. One number. Not a range, not an estimate, not a "starting at."</p>
           </div>
-          <div class="nw-step" data-sc-cue="0.62 1 0.1 0.03">
+          <div class="nw-step" data-sc-cue="0.66 1 0.2 0">
             <p class="sc-display sc-display--lg">We show up and do the work.</p>
-            <p class="sc-lede">${BIZ.hours}. Standard mounting hardware is included with installs.</p>
+            <p class="sc-lede">${BIZ.hours}. Standard mounting hardware is included with installs. You pay the number you were quoted.</p>
           </div>
         </div>
       </div>
@@ -266,38 +295,39 @@ pages["/"] = `${head({
         <img src="/home/img/behind-wall.jpg" width="1500" height="1125" alt="A torch held up to a neat inspection hole in drywall, lighting an old water stain on the stud behind it." loading="lazy">
       </figure>
       <div data-sc-in data-sc-stagger="70">
-        <h2 class="sc-display sc-display--lg">What if something's hidden?</h2>
-        <p class="sc-lede">We stop, photograph it, and quote the extra before doing anything. You decide. You never get a surprise on the invoice.</p>
+        <h2 class="sc-display sc-display--lg">What if there's a surprise behind the wall?</h2>
+        <p class="sc-lede">The price changes for two reasons only, and you approve both before any extra work happens. You never get a surprise on the invoice.</p>
         <ul class="nw-excepts">
-          <li><strong>You add work.</strong> Different job, new price, quoted the same way.</li>
-          <li><strong>Something's hidden.</strong> Rot behind the tile, a surprise in the wall. We stop, show you a photo, and quote it. You decide whether we keep going.</li>
+          <li><strong>You add work.</strong> A different job gets its own price, quoted the same way.</li>
+          <li><strong>Something was hidden.</strong> Rot behind the tile, an old leak in the wall. We stop, send you a photo and quote the extra. You decide whether we keep going.</li>
         </ul>
       </div>
     </div>
   </section>
 
   <!-- 4 · PAYOFF: a wipe is a change of state -->
-  <section class="nw-wipe" data-sc-act="pin" data-sc-span="2" data-nw-status="Done. Same price">
+  <section class="nw-wipe" data-sc-act="pin" data-sc-span="2.2" data-nw-status="Done. Same price">
     <div data-sc-stage>
       <img src="/home/img/wall-before.jpg" width="2200" height="1228" alt="" loading="lazy">
-      <figure data-sc-reveal="right" data-sc-reveal-at="0.12 0.62">
+      <figure data-sc-reveal="right" data-sc-reveal-at="0.08 0.52">
         <img src="/home/img/wall-after.jpg" width="2200" height="1228" alt="The same wall afterwards: the TV is mounted level above the console, the boxes and cables are gone." loading="lazy">
       </figure>
+      <div class="nw-wipe__level" aria-hidden="true"></div>
       <div class="nw-wipe__scrim" aria-hidden="true"></div>
-      <div class="sc-copy sc-copy--lead" data-sc-cue="0.5 1 0.12 0.03">
+      <div class="sc-copy sc-copy--lead" data-sc-cue="0.46 1 0.16 0.03">
         <h2 class="sc-display sc-display--lg" data-sc-kinetic="lines">The price doesn't move.</h2>
-        <p class="sc-lede">Stud-mounted, level, cords tidied. If the job is what the photo showed, the price is what we said.</p>
+        <p class="sc-lede">Mounted to the studs, level, cords tidied. The job matched the photo, so the price is the one we sent you.</p>
       </div>
     </div>
   </section>
 
   <!-- 5 · RANGE: lateral travel reads as options -->
-  <section class="nw-range" data-sc-act="pan" data-sc-span="2.8" data-nw-status="Pick a job">
+  <section class="nw-range" id="prices" data-sc-act="pan" data-sc-span="2.4" data-nw-status="Pick a job">
     <div data-sc-stage>
       <div class="nw-rail" data-sc-pan="0.04">
         <div class="nw-rail__lead">
           <h2 class="sc-display sc-display--lg">What we fix</h2>
-          <p class="sc-body">Starting prices for the most common jobs. Your photo quote is one flat number. Pick one and the tag follows you to the invoice.</p>
+          <p class="sc-body">Starting prices for the jobs we do most. Put one on the tag and it carries that price all the way to the invoice.</p>
         </div>
 
 ${homeJobs}
@@ -312,12 +342,12 @@ ${homeJobs}
   </section>
 
   <!-- 6 · TERMS: authored quiet before the peak -->
-  <section class="sc-section nw-terms" data-sc-act="flow" data-nw-status="Flat price">
+  <section class="sc-section nw-terms" id="terms" data-sc-act="flow" data-nw-status="Flat price">
     <div class="sc-wrap">
       <div class="nw-terms__top">
         <div data-sc-in data-sc-stagger="60">
           <h2 class="sc-display sc-display--lg">The number we quote is the number on your invoice.</h2>
-          <p class="sc-body">Not "about." Not "plus materials." Not "depending on what we find." Two exceptions, and we tell you about both before we start work, not after. That's the whole policy.</p>
+          <p class="sc-body">Not "about." Not "plus materials." Not "depending on what we find." Two exceptions, and you approve both before any extra work happens, not after. That's the whole policy.</p>
         </div>
         <dl class="nw-facts" data-sc-in data-sc-stagger="50">
           <div><dt>Managing properties? You don't need to be there.</dt><dd>Your tenant texts us the photo. We quote you the flat price. You approve by text. One invoice, one point of contact, photos when it's done.</dd></div>
@@ -331,25 +361,25 @@ ${homeJobs}
         ${faqHtml}
       </div>
 
-      <nav class="nw-pages" aria-label="Site pages" data-sc-in>
+      <nav class="nw-pages" id="pages" aria-label="Site pages" data-sc-in>
         ${HOME_LINKS.map(([href, label]) => `<a class="nw-link" href="${href}">${label}</a>`).join("")}
       </nav>
     </div>
   </section>
 
   <!-- 7 · COMMITMENT: the tag lands on the invoice. Last element on the page. -->
-  <section class="nw-close" id="invoice" data-sc-act="pin" data-sc-span="3" data-nw-status="Total due">
+  <section class="nw-close" id="invoice" data-sc-act="pin" data-sc-span="2.6" data-nw-status="Total due">
     <div data-sc-stage>
       <div class="nw-close__grid">
         <div class="nw-close__copy">
-          <div class="nw-close__pre" data-sc-cue="0 0.46 0">
+          <div class="nw-close__pre" data-sc-cue="0 0.48 0 0.25">
             <p class="sc-display sc-display--lg">Then the invoice arrives.</p>
             <p class="sc-lede">One line is still blank.</p>
           </div>
           <div class="nw-close__main">
-            <h2 class="sc-display sc-display--lg" data-sc-cue="0.56">Send the photo. Get the price. Decide from there.</h2>
-            <p class="sc-lede" data-sc-cue="0.6">It takes thirty seconds and costs nothing. Worst case, you find out what the job actually costs.</p>
-            <div class="nw-actions" data-sc-cue="0.6" data-sc-rise="0">
+            <h2 class="sc-display sc-display--lg" data-sc-cue="0.6">Send the photo. Get the price. Decide from there.</h2>
+            <p class="sc-lede" data-sc-cue="0.64">It takes thirty seconds and costs nothing. Worst case, you find out what the job actually costs.</p>
+            <div class="nw-actions" data-sc-cue="0.64" data-sc-rise="0">
               <a class="nw-btn" data-nw-sms href="${HOME_SMS}">Text a photo</a>
               <a class="nw-link" href="${TEL}">Call ${BIZ.phone}</a>
               <a class="nw-link" href="/get-a-quote">Upload photos online</a>
