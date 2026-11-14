@@ -614,7 +614,7 @@ for (const [path, html] of Object.entries(pages)) {
   mkdirSync(dirname(dest), { recursive: true });
   writeFileSync(dest, html);
 }
-for (const f of ["styles.css", "favicon.svg", "og-image.png", "_redirects", "_headers", "robots.txt"]) copyFileSync(join("src", f), join(out, f));
+for (const f of ["styles.css", "favicon.svg", "og-image.png", "_redirects", "_headers", "robots.txt", "sw.js", "registerSW.js"]) copyFileSync(join("src", f), join(out, f));
 cpSync(join("src", "home"), join(out, "home"), { recursive: true });
 
 const urls = Object.keys(pages).filter((p) => p !== "/404");
