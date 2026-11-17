@@ -71,9 +71,9 @@ ${styles}
 </head>`;
 }
 
-function layout({ path, title, description, body, schema = [] }) {
+function layout({ path, title, description, body, schema = [], extraHead = "" }) {
   const nav = NAV.map(([href, label]) => `<a href="${href}"${href === path ? ' aria-current="page"' : ""}>${label}</a>`).join("");
-  return `${head({ path, title, description, schema })}
+  return `${head({ path, title, description, schema, styles: `<link rel="stylesheet" href="/styles.css">${extraHead}` })}
 <body>
 <a class="skip" href="#main">Skip to main content</a>
 <header class="site"><div class="wrap">
@@ -94,6 +94,7 @@ ${body}
     <div><strong>Pages</strong><ul>
       <li><a href="/services">Services &amp; prices</a></li>
       <li><a href="/tv-mounting-fredericksburg-va">TV mounting</a></li>
+      <li><a href="/drywall-repair-fredericksburg-va">Drywall repair</a></li>
       <li><a href="/landlords">Landlords &amp; property managers</a></li>
       <li><a href="/get-a-quote">Get a photo quote</a></li></ul></div>
     <div><strong>Areas</strong><ul>
@@ -173,6 +174,7 @@ const homeJobs = SERVICES.map((s, i) => {
 const HOME_LINKS = [
   ["/services", "Services &amp; prices", "every job"],
   ["/tv-mounting-fredericksburg-va", "TV mounting", SERVICES[0].price.replace(/ per .*/, "").toLowerCase()],
+  ["/drywall-repair-fredericksburg-va", "Drywall repair", SERVICES[2].price.replace(/ per .*/, "").toLowerCase()],
   ["/landlords", "Landlords", "approve by text"],
   ["/service-areas/fredericksburg-va", "Fredericksburg &amp; Stafford", "home base"],
   ["/service-areas/northern-virginia", "Northern Virginia", "by quote"],
@@ -431,7 +433,7 @@ pages["/services"] = layout({
     <tbody>
       <tr><td>TV mounting</td><td>$150 per TV</td><td>Brick/concrete/plaster wall +$50 · In-wall cable concealment +$75</td></tr>
       <tr><td>Furniture / console assembly</td><td>$95 per piece</td><td>Solid or heavy furniture (not flat-pack) +$60</td></tr>
-      <tr><td>Trim / baseboard / drywall patch</td><td>$120 per patch</td><td>Paint match +$40</td></tr>
+      <tr><td><a href="/drywall-repair-fredericksburg-va">Trim / baseboard / drywall patch</a></td><td>$120 per patch</td><td>Paint match +$40</td></tr>
       <tr><td>Blinds installation</td><td>$40 per window</td><td>Patio slider vertical +$85 · Tile/stone surround +$15 · High or stairwell window +$15 · Take down old blinds +$10 · Haul away +$45 per visit</td></tr>
     </tbody>
   </table>
@@ -475,6 +477,60 @@ pages["/tv-mounting-fredericksburg-va"] = layout({
   <p class="prose">Mounting a TV plus another job in the same visit? Two services get 8% off; three or more get 11% off.</p>
 </div></section>
 ${ctaBand("Need your TV up this week? Send the photo.")}`,
+});
+
+pages["/drywall-repair-fredericksburg-va"] = layout({
+  path: "/drywall-repair-fredericksburg-va",
+  title: "Drywall Repair in Fredericksburg, VA from $120 | No Worries",
+  description: "Drywall holes, dents and patches repaired in Fredericksburg, Stafford and Spotsylvania. From $120 per patch, paint match +$40. Text a photo for a flat price.",
+  schema: [{
+    "@type": "Service", name: "Drywall repair", serviceType: "Drywall patch and repair",
+    provider: { "@id": `${SITE}/#business` },
+    areaServed: AREA_CITIES.map((c) => `${c}, VA`),
+    offers: { "@type": "Offer", price: "120", priceCurrency: "USD", description: "Starting price per drywall patch" },
+  }],
+  extraHead: '\n<link rel="stylesheet" href="/drywall/drywall.css">\n<script src="/drywall/drywall.js" defer></script>',
+  body: `<section class="hero"><div class="wrap">
+  <h1>Drywall repair in Fredericksburg, VA, from $120</h1>
+  <p class="lead">Text a photo of the hole or dent. You'll get one flat price back, usually the same day.</p>
+  ${ctaButtons()}
+</div></section>
+<section class="dw-watch" data-dw-watch aria-labelledby="dw-watch-h"><div class="wrap">
+  <h2 id="dw-watch-h">Watch the wall come back</h2>
+  <p class="dw-intro">Keep scrolling. This is how a typical hole goes from damaged to done.</p>
+  <div class="dw-grid">
+    <figure class="dw-fig">
+      <img src="/drywall/img/wall-hole.jpg" width="1600" height="894" alt="A slate-blue living room wall with a ragged, plate-sized hole punched through the drywall, dust on the baseboard below.">
+      <img class="dw-after" src="/drywall/img/wall-fixed.jpg" width="1600" height="894" alt="The same wall after the repair: smooth, painted to match, with no sign of the hole.">
+      <div class="dw-line" aria-hidden="true"></div>
+      <span class="dw-tag dw-tag--before" aria-hidden="true">Before</span>
+      <span class="dw-tag dw-tag--after" aria-hidden="true">After</span>
+    </figure>
+    <ol class="dw-steps">
+      <li><h3>You send the photo</h3><p>One close-up, one wide shot. We send back a single flat price, and nothing happens until you say yes.</p></li>
+      <li><h3>Cut back to solid board</h3><p>Loose paper and crumbled gypsum come out, and the hole is squared up so the patch has something sound to bond to.</p></li>
+      <li><h3>Patch, tape and mud</h3><p>New board or a backer goes in, then tape and joint compound in thin coats, feathered wide so there's no bump.</p></li>
+      <li><h3>Sand, prime and paint</h3><p>Sanded flush, texture matched if your wall has one, primed and painted. The patch is gone, and so is the dust.</p></li>
+    </ol>
+  </div>
+</div></section>
+<section><div class="wrap">
+  <div class="grid">
+    <div class="card"><h3>Drywall patch</h3><div class="price">$120 per patch</div><p>Door-knob holes, dents, old anchor holes, nail pops. Cut, patched, taped, mudded and sanded smooth.</p></div>
+    <div class="card"><h3>Paint match</h3><div class="price">+$40</div><p>We prime and paint the patch to match your wall, so it disappears instead of showing as a white square. Small patches are usually painted the same visit with quick-setting compound. Bigger repairs need to dry overnight first, so we come back to paint, and that return trip is already in the flat price you approve.</p></div>
+    <div class="card"><h3>Trim &amp; baseboard</h3><div class="price">From $120</div><p>Dented, split or loose baseboard and trim repaired or replaced along with the wall.</p></div>
+  </div>
+  <h2 style="margin-top:40px">What to send for a fast quote</h2>
+  <ul class="prose">
+    <li>A close-up of the damage with something for scale (a hand, a coin, a tape measure)</li>
+    <li>A wider shot so we can see the wall and the paint around it</li>
+    <li>Whether you want it painted to match, and the paint can or color name if you have it</li>
+  </ul>
+  <p class="prose"><strong>Bigger jobs too.</strong> Water damage, ceiling repairs, whole sections or full sheets of drywall: send the photo and you'll get one flat price for the lot, the same way as a patch.</p>
+  <p class="prose"><strong>Textured walls and ceilings.</strong> Orange peel, knockdown or popcorn texture matched on request, so the repair blends in. Mention it with your photo and it goes into the quote.</p>
+  <p class="prose">Fixing drywall plus another job in the same visit? Two services get 8% off; three or more get 11% off.</p>
+</div></section>
+${ctaBand("Hole in the wall? Send the photo.")}`,
 });
 
 pages["/landlords"] = layout({
@@ -616,6 +672,7 @@ for (const [path, html] of Object.entries(pages)) {
 }
 for (const f of ["styles.css", "favicon.svg", "og-image.png", "_redirects", "_headers", "robots.txt", "sw.js", "registerSW.js"]) copyFileSync(join("src", f), join(out, f));
 cpSync(join("src", "home"), join(out, "home"), { recursive: true });
+cpSync(join("src", "drywall"), join(out, "drywall"), { recursive: true });
 
 const urls = Object.keys(pages).filter((p) => p !== "/404");
 writeFileSync(join(out, "sitemap.xml"),
