@@ -500,8 +500,8 @@ pages["/drywall-repair-fredericksburg-va"] = layout({
   <p class="dw-intro">Keep scrolling. This is how a typical hole goes from damaged to done.</p>
   <div class="dw-grid">
     <figure class="dw-fig">
-      <img src="/drywall/img/wall-hole.jpg" width="1600" height="894" alt="A slate-blue living room wall with a ragged, plate-sized hole punched through the drywall, dust on the baseboard below." loading="lazy">
-      <img class="dw-after" src="/drywall/img/wall-fixed.jpg" width="1600" height="894" alt="The same wall after the repair: smooth, painted to match, with no sign of the hole." loading="lazy">
+      <img src="/drywall/img/wall-hole.jpg" width="1600" height="894" alt="A slate-blue living room wall with a ragged, plate-sized hole punched through the drywall, dust on the baseboard below.">
+      <img class="dw-after" src="/drywall/img/wall-fixed.jpg" width="1600" height="894" alt="The same wall after the repair: smooth, painted to match, with no sign of the hole.">
       <div class="dw-line" aria-hidden="true"></div>
       <span class="dw-tag dw-tag--before" aria-hidden="true">Before</span>
       <span class="dw-tag dw-tag--after" aria-hidden="true">After</span>
