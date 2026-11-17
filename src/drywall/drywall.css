@@ -1,0 +1,41 @@
+/* Drywall page: the repair happens while you read. The finished wall wipes over
+   the damaged one, driven by how far the steps beside it have been scrolled. */
+.dw-watch { background: #0f1c27; color: #fff; padding: 56px 0 72px; }
+.dw-watch h2 { margin: 0 0 8px; font-size: clamp(1.6rem, 3.4vw, 2.3rem); line-height: 1.15; }
+.dw-watch .dw-intro { margin: 0 0 32px; max-width: 40rem; opacity: .85; }
+
+.dw-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 40px; align-items: start; }
+.dw-steps { grid-column: 1; grid-row: 1; list-style: none; margin: 0; padding: 0; counter-reset: dw; }
+.dw-steps li { counter-increment: dw; min-height: 62vh; display: flex; flex-direction: column; justify-content: center; padding: 8px 0;
+  opacity: .5; transition: opacity 260ms ease; }
+.dw-steps li.is-on { opacity: 1; }
+.dw-steps li::before { content: counter(dw); display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
+  border: 2px solid var(--accent); color: var(--accent); font-weight: 800; margin-bottom: 12px; }
+.dw-steps h3 { margin: 0 0 6px; font-size: 1.35rem; }
+.dw-steps p { margin: 0; opacity: .88; max-width: 28rem; }
+.dw-steps li:first-child { min-height: 40vh; justify-content: flex-start; padding-top: 12vh; }
+.dw-steps li:last-child { min-height: 52vh; }
+
+.dw-fig { grid-column: 2; grid-row: 1; position: sticky; top: 12vh; margin: 0; aspect-ratio: 4 / 3; border-radius: var(--radius); overflow: hidden;
+  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, .7); --p: .5; }
+.dw-fig img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 60% 50%; }
+.dw-fig .dw-after { clip-path: inset(0 calc((1 - var(--p)) * 100%) 0 0); }
+.dw-fig .dw-line { position: absolute; top: 0; bottom: 0; left: calc(var(--p) * 100%); width: 2px; margin-left: -1px;
+  background: var(--accent); box-shadow: 0 0 0 1px rgba(0, 0, 0, .25); opacity: calc(min(var(--p), 1 - var(--p)) * 12); pointer-events: none; }
+.dw-tag { position: absolute; bottom: 12px; padding: 4px 10px; border-radius: 999px; font-size: .78rem; font-weight: 700; letter-spacing: .04em;
+  background: rgba(15, 28, 39, .78); color: #fff; }
+.dw-tag--before { right: 12px; opacity: calc(1.6 - var(--p) * 1.8); }
+.dw-tag--after { left: 12px; opacity: calc(var(--p) * 1.8 - .2); }
+
+@media (max-width: 899px) {
+  .dw-watch { padding: 40px 0 48px; }
+  .dw-grid { display: block; }
+  .dw-fig { position: sticky; top: 0; z-index: 1; aspect-ratio: auto; height: 40vh; margin: 0 -20px; border-radius: 0; }
+  .dw-steps li, .dw-steps li:first-child { min-height: 46vh; padding-top: 24px; justify-content: flex-start; }
+  .dw-steps li:last-child { min-height: 52vh; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dw-steps li { opacity: 1; transition: none; }
+  .dw-fig { --p: .5 !important; }
+}
