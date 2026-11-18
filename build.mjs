@@ -130,7 +130,7 @@ const SERVICES = [
   { name: "Trim, baseboard & drywall patch", price: "From $120 per patch", note: "Holes, dents and damaged trim. Paint match +$40." },
   { name: "Blinds installation", price: "From $40 per window", note: "Patio slider vertical +$85. Take-down of old blinds +$10 per window." },
 ];
-const OTHER_WORK = ["Interior painting", "Light fixture & ceiling fan swaps", "Shelves, mirrors & art hanging", "Faucet & toilet swaps", "Hauling & junk removal", "Punch lists & turnover work", "Smart doorbells & thermostats", "Pressure washing"];
+const OTHER_WORK = ["Interior painting", "Ceiling fan & light fixture installation", "Shelves, mirrors & art hanging", "Faucet & toilet replacement", "Hauling & junk removal", "Punch lists & turnover work", "Smart doorbells & thermostats", "Pressure washing"];
 
 const FAQ = [
   ["How accurate is a photo quote?", "For most small jobs, very. A wide shot plus a close-up usually tells us everything. If we can't price it from photos, we'll say so instead of guessing."],
@@ -421,26 +421,26 @@ ${homeJobs}
 pages["/services"] = layout({
   path: "/services",
   title: "Handyman Services & Prices | No Worries, Fredericksburg VA",
-  description: "Starting prices for TV mounting, furniture assembly, drywall patches and blinds. Bundle discounts on multi-job visits. Text a photo for one flat price.",
+  description: "Handyman services in Fredericksburg, VA with flat prices: TV mounting from $150, drywall patches from $120, furniture assembly and blinds. Text a photo for one price.",
   body: `<section class="hero"><div class="wrap">
-  <h1>Services &amp; starting prices</h1>
-  <p class="lead">Every job gets one flat price from your photos. These are where common jobs start.</p>
+  <h1>Handyman services &amp; prices in Fredericksburg, VA</h1>
+  <p class="lead">Flat-rate handyman services across Fredericksburg, Stafford and Spotsylvania. Text a photo and get one price for the whole job. Here's where common jobs start.</p>
   ${ctaButtons()}
 </div></section>
 <section><div class="wrap">
   <table class="prices">
-    <thead><tr><th>Service</th><th>Starts at</th><th>Common add-ons</th></tr></thead>
+    <thead><tr><th>Service</th><th>From</th><th>Common add-ons</th></tr></thead>
     <tbody>
-      <tr><td>TV mounting</td><td>$150 per TV</td><td>Brick/concrete/plaster wall +$50 · In-wall cable concealment +$75</td></tr>
+      <tr><td><a href="/tv-mounting-fredericksburg-va">TV mounting</a></td><td>$150 per TV</td><td>Brick/concrete/plaster wall +$50 · In-wall cable concealment +$75</td></tr>
       <tr><td>Furniture / console assembly</td><td>$95 per piece</td><td>Solid or heavy furniture (not flat-pack) +$60</td></tr>
-      <tr><td><a href="/drywall-repair-fredericksburg-va">Trim / baseboard / drywall patch</a></td><td>$120 per patch</td><td>Paint match +$40</td></tr>
+      <tr><td><a href="/drywall-repair-fredericksburg-va">Drywall patch, trim &amp; baseboard</a></td><td>$120 per patch</td><td>Paint match +$40</td></tr>
       <tr><td>Blinds installation</td><td>$40 per window</td><td>Patio slider vertical +$85 · Tile/stone surround +$15 · High or stairwell window +$15 · Take down old blinds +$10 · Haul away +$45 per visit</td></tr>
     </tbody>
   </table>
   <p class="prose" style="margin-top:14px"><strong>Visit minimum: $95.</strong> Smaller jobs are quoted at the minimum, never turned away.</p>
   <h2 style="margin-top:40px">Bundle and save</h2>
   <p class="prose">Two services in one visit: 8% off the base prices. Three or more: 11% off. Add-ons are never discounted. Example: TV mount + dresser assembly + trim patch is $365 separately, <strong>$325 together</strong>.</p>
-  <h2 style="margin-top:40px">Other work we quote from photos</h2>
+  <h2 style="margin-top:40px">More handyman services, quoted from photos</h2>
   <ul class="tags">${OTHER_WORK.map((w) => `<li>${w}</li>`).join("")}</ul>
   <p class="prose">Send a photo of anything else. If it isn't something we do, we'll say so and point you to someone who does.</p>
 </div></section>
