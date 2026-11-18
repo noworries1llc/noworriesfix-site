@@ -112,6 +112,9 @@ ${body}
 </html>`;
 }
 
+// The scroll-driven before/after used on service pages (src/watch).
+const WATCH_HEAD = '\n<link rel="stylesheet" href="/watch/watch.css">\n<script src="/watch/watch.js" defer></script>';
+
 const ctaButtons = (extra = "") => `<div class="btn-row ${extra}">
   <a class="btn btn-primary" href="${SMS}">Text a photo</a>
   <a class="btn btn-ghost" href="${TEL}">Call ${BIZ.phone}</a>
@@ -457,10 +460,30 @@ pages["/tv-mounting-fredericksburg-va"] = layout({
     areaServed: AREA_CITIES.map((c) => `${c}, VA`),
     offers: { "@type": "Offer", price: "150", priceCurrency: "USD", description: "Starting price per TV, standard drywall install" },
   }],
+  extraHead: WATCH_HEAD,
   body: `<section class="hero"><div class="wrap">
   <h1>TV mounting in Fredericksburg, VA, from $150</h1>
   <p class="lead">Text a photo of the TV and the wall. You'll get one flat price back, usually the same day.</p>
   ${ctaButtons()}
+</div></section>
+<section class="dw-watch" data-dw-watch aria-labelledby="dw-watch-h"><div class="wrap">
+  <h2 id="dw-watch-h">Watch a TV go up over the fireplace</h2>
+  <p class="dw-intro">Keep scrolling. This is how a typical over-the-mantel install goes, start to finish.</p>
+  <div class="dw-grid">
+    <figure class="dw-fig" style="--dw-focus: 50% 40%">
+      <img src="/tv/img/fireplace-before.jpg" width="1600" height="894" alt="A living room fireplace with a bare wall above the white mantel, ready for a TV.">
+      <img class="dw-after" src="/tv/img/fireplace-after.jpg" width="1600" height="894" alt="The same fireplace with a large flat-screen TV mounted level above the mantel and no cords showing.">
+      <div class="dw-line" aria-hidden="true"></div>
+      <span class="dw-tag dw-tag--before" aria-hidden="true">Before</span>
+      <span class="dw-tag dw-tag--after" aria-hidden="true">After</span>
+    </figure>
+    <ol class="dw-steps">
+      <li><h3>You send the photo</h3><p>The wall above the mantel and your TV size. Brick or stone is fine: it's priced in before you approve, never added on the day.</p></li>
+      <li><h3>Find solid backing</h3><p>Studs located behind drywall, or masonry anchors drilled into brick, so the mount carries the TV's full weight.</p></li>
+      <li><h3>Mount it level</h3><p>Mount fixed, TV lifted on and checked with a level before anyone lets go, at a height you've agreed to.</p></li>
+      <li><h3>Cords out of sight</h3><p>Cables tidied so nothing dangles. On drywall they can run inside the wall with in-wall concealment (+$75).</p></li>
+    </ol>
+  </div>
 </div></section>
 <section><div class="wrap">
   <div class="grid">
@@ -489,7 +512,7 @@ pages["/drywall-repair-fredericksburg-va"] = layout({
     areaServed: AREA_CITIES.map((c) => `${c}, VA`),
     offers: { "@type": "Offer", price: "120", priceCurrency: "USD", description: "Starting price per drywall patch" },
   }],
-  extraHead: '\n<link rel="stylesheet" href="/drywall/drywall.css">\n<script src="/drywall/drywall.js" defer></script>',
+  extraHead: WATCH_HEAD,
   body: `<section class="hero"><div class="wrap">
   <h1>Drywall repair in Fredericksburg, VA, from $120</h1>
   <p class="lead">Text a photo of the hole or dent. You'll get one flat price back, usually the same day.</p>
@@ -499,7 +522,7 @@ pages["/drywall-repair-fredericksburg-va"] = layout({
   <h2 id="dw-watch-h">Watch the wall come back</h2>
   <p class="dw-intro">Keep scrolling. This is how a typical hole goes from damaged to done.</p>
   <div class="dw-grid">
-    <figure class="dw-fig">
+    <figure class="dw-fig" style="--dw-focus: 60% 50%">
       <img src="/drywall/img/wall-hole.jpg" width="1600" height="894" alt="A slate-blue living room wall with a ragged, plate-sized hole punched through the drywall, dust on the baseboard below.">
       <img class="dw-after" src="/drywall/img/wall-fixed.jpg" width="1600" height="894" alt="The same wall after the repair: smooth, painted to match, with no sign of the hole.">
       <div class="dw-line" aria-hidden="true"></div>
@@ -672,7 +695,7 @@ for (const [path, html] of Object.entries(pages)) {
 }
 for (const f of ["styles.css", "favicon.svg", "og-image.png", "_redirects", "_headers", "robots.txt", "sw.js", "registerSW.js"]) copyFileSync(join("src", f), join(out, f));
 cpSync(join("src", "home"), join(out, "home"), { recursive: true });
-cpSync(join("src", "drywall"), join(out, "drywall"), { recursive: true });
+for (const d of ["watch", "drywall", "tv"]) cpSync(join("src", d), join(out, d), { recursive: true });
 
 const urls = Object.keys(pages).filter((p) => p !== "/404");
 writeFileSync(join(out, "sitemap.xml"),
