@@ -96,6 +96,7 @@ ${body}
       <li><a href="/services">Services &amp; prices</a></li>
       <li><a href="/tv-mounting-fredericksburg-va">TV mounting</a></li>
       <li><a href="/drywall-repair-fredericksburg-va">Drywall repair</a></li>
+      <li><a href="/ceiling-fan-installation-fredericksburg-va">Ceiling fan installation</a></li>
       <li><a href="/landlords">Landlords &amp; property managers</a></li>
       <li><a href="/get-a-quote">Get a photo quote</a></li></ul></div>
     <div><strong>Areas</strong><ul>
@@ -134,6 +135,9 @@ const SERVICES = [
   { name: "Trim, baseboard & drywall patch", price: "From $120 per patch", note: "Holes, dents and damaged trim. Paint match +$40." },
   { name: "Blinds installation", price: "From $40 per window", note: "Patio slider vertical +$85. Take-down of old blinds +$10 per window." },
 ];
+// Other-work items that have their own page.
+const OTHER_WORK_PAGES = { "Ceiling fan & light fixture installation": "/ceiling-fan-installation-fredericksburg-va" };
+const otherWork = (w, label = w) => OTHER_WORK_PAGES[w] ? `<a href="${OTHER_WORK_PAGES[w]}">${label}</a>` : label;
 const OTHER_WORK = ["Interior painting", "Ceiling fan & light fixture installation", "Shelves, mirrors & art hanging", "Faucet & toilet replacement", "Hauling & junk removal", "Punch lists & turnover work", "Smart doorbells & thermostats", "Pressure washing"];
 
 const FAQ = [
@@ -179,6 +183,7 @@ const HOME_LINKS = [
   ["/services", "Services &amp; prices", "every job"],
   ["/tv-mounting-fredericksburg-va", "TV mounting", SERVICES[0].price.replace(/ per .*/, "").toLowerCase()],
   ["/drywall-repair-fredericksburg-va", "Drywall repair", SERVICES[2].price.replace(/ per .*/, "").toLowerCase()],
+  ["/ceiling-fan-installation-fredericksburg-va", "Ceiling fans", "by photo"],
   ["/landlords", "Landlords", "approve by text"],
   ["/service-areas/fredericksburg-va", "Fredericksburg &amp; Stafford", "home base"],
   ["/service-areas/northern-virginia", "Northern Virginia", "by quote"],
@@ -340,7 +345,7 @@ ${homeJobs}
 
         <div class="nw-rail__note">
           <h3>Also on the list</h3>
-          <ul>${OTHER_WORK.map((w) => `<li>${esc(w)}</li>`).join("")}</ul>
+          <ul>${OTHER_WORK.map((w) => `<li>${otherWork(w, esc(w))}</li>`).join("")}</ul>
           <p><strong>Not sure if it's on the list? Send the photo anyway.</strong> If we can't do it, we'll tell you who can.</p>
         </div>
       </div>
@@ -446,7 +451,7 @@ pages["/services"] = layout({
   <h2 style="margin-top:40px">Bundle and save</h2>
   <p class="prose">Two services in one visit: 8% off the base prices. Three or more: 11% off. Add-ons are never discounted. Example: TV mount + dresser assembly + trim patch is $365 separately, <strong>$325 together</strong>.</p>
   <h2 style="margin-top:40px">More handyman services, quoted from photos</h2>
-  <ul class="tags">${OTHER_WORK.map((w) => `<li>${w}</li>`).join("")}</ul>
+  <ul class="tags">${OTHER_WORK.map((w) => `<li>${otherWork(w)}</li>`).join("")}</ul>
   <p class="prose">Send a photo of anything else. If it isn't something we do, we'll say so and point you to someone who does.</p>
 </div></section>
 ${ctaBand()}`,
@@ -556,6 +561,38 @@ pages["/drywall-repair-fredericksburg-va"] = layout({
   <p class="prose">Fixing drywall plus another job in the same visit? Two services get 8% off; three or more get 11% off.</p>
 </div></section>
 ${ctaBand("Hole in the wall? Send the photo.")}`,
+});
+
+pages["/ceiling-fan-installation-fredericksburg-va"] = layout({
+  path: "/ceiling-fan-installation-fredericksburg-va",
+  title: "Ceiling Fan Installation in Fredericksburg, VA | No Worries",
+  description: "Ceiling fan and light fixture installation in Fredericksburg, Stafford and Spotsylvania. Text a photo for one flat price, usually the same day.",
+  schema: [{
+    "@type": "Service", name: "Ceiling fan installation", serviceType: "Ceiling fan and light fixture installation",
+    provider: { "@id": `${SITE}/#business` },
+    areaServed: AREA_CITIES.map((c) => `${c}, VA`),
+  }],
+  body: `<section class="hero"><div class="wrap">
+  <h1>Ceiling fan installation in Fredericksburg, VA</h1>
+  <p class="lead">Text a photo of the ceiling and the fan you've bought. You'll get one flat price back, usually the same day.</p>
+  ${ctaButtons()}
+</div></section>
+<section><div class="wrap">
+  <div class="grid">
+    <div class="card"><h3>Replace an old fan</h3><div class="price">Flat price from a photo</div><p>Old fan down, new one assembled, hung, wired to the existing box, balanced and tested on every speed.</p></div>
+    <div class="card"><h3>Light fixture to fan</h3><div class="price">Flat price from a photo</div><p>Swap a ceiling light for a fan. A fan needs a fan-rated box, so we check yours first and say in the quote what it needs.</p></div>
+    <div class="card"><h3>Light fixtures</h3><div class="price">Flat price from a photo</div><p>Ceiling lights, pendants and flush mounts swapped where the wiring and box are already in place.</p></div>
+  </div>
+  <h2 style="margin-top:40px">What to send for a fast quote</h2>
+  <ul class="prose">
+    <li>A photo of the ceiling where the fan goes, plus a close-up of what's there now</li>
+    <li>The fan you've bought, or a link to it</li>
+    <li>The ceiling height, especially for vaulted or stairwell ceilings, so a downrod or taller ladder goes into the price</li>
+  </ul>
+  <p class="prose">This is for ceilings that already have a box and power. If a spot needs new wiring or a new circuit, we'll tell you straight and point you to an electrician rather than guess.</p>
+  <p class="prose">Installing a fan plus another job in the same visit? Two services get 8% off; three or more get 11% off.</p>
+</div></section>
+${ctaBand("Fan in the box? Send the photo.")}`,
 });
 
 pages["/landlords"] = layout({
