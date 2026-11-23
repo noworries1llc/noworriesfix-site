@@ -648,7 +648,7 @@ pages["/get-a-quote"] = layout({
   <p class="lead">Two ways to send photos. Either way, you'll get one number back, usually the same day. Free, no obligation.</p>
 </div></section>
 <section><div class="wrap">
-  <div class="grid">
+  <div class="grid grid--pairs">
     <div class="card"><h3>Fastest: text the photo</h3><p>Text a wide shot and a close-up to ${BIZ.phone} with a one-line description and your ZIP.</p><p><a class="btn btn-primary" href="${SMS}">Text a photo</a></p></div>
     <div class="card"><h3>Or upload online</h3><p>Short form: name, number, address, what needs fixing, and your photos. Goes straight to us.</p><p><a class="btn btn-primary" href="${QUOTE_FORM_URL}" target="_blank" rel="noopener">Open the quote form</a></p></div>
     <div class="card"><h3>Rather talk?</h3><p>Call ${BIZ.phone}, ${BIZ.hours}. If we miss you, we'll call back the same business day.</p><p><a class="btn btn-ghost" href="${TEL}">Call now</a></p></div>
