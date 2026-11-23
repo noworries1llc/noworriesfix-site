@@ -11,6 +11,7 @@ const BIZ = {
   hours: "Mon–Sat, 8am–6pm",
 };
 // Public Airtable form (Lead Intake). Confirm this matches the URL Airtable shows after you publish the form.
+const BOOKING_URL = "https://calendly.com/noworries-1llc";
 const QUOTE_FORM_URL = "https://airtable.com/app6notXDAuIhLpEG/pagMX8QI9t0Zwm3r5/form";
 const GA_ID = "G-7J7M54ZLW0";
 
@@ -388,6 +389,7 @@ ${homeJobs}
               <a class="nw-btn" data-nw-sms href="${HOME_SMS}">Text a photo</a>
               <a class="nw-link" href="${TEL}">Call ${BIZ.phone}</a>
               <a class="nw-link" href="/get-a-quote">Upload photos online</a>
+              <a class="nw-link" href="${BOOKING_URL}" target="_blank" rel="noopener">Already quoted? Book a time</a>
             </div>
           </div>
         </div>
@@ -650,6 +652,7 @@ pages["/get-a-quote"] = layout({
     <div class="card"><h3>Fastest: text the photo</h3><p>Text a wide shot and a close-up to ${BIZ.phone} with a one-line description and your ZIP.</p><p><a class="btn btn-primary" href="${SMS}">Text a photo</a></p></div>
     <div class="card"><h3>Or upload online</h3><p>Short form: name, number, address, what needs fixing, and your photos. Goes straight to us.</p><p><a class="btn btn-primary" href="${QUOTE_FORM_URL}" target="_blank" rel="noopener">Open the quote form</a></p></div>
     <div class="card"><h3>Rather talk?</h3><p>Call ${BIZ.phone}, ${BIZ.hours}. If we miss you, we'll call back the same business day.</p><p><a class="btn btn-ghost" href="${TEL}">Call now</a></p></div>
+    <div class="card"><h3>Already have your price?</h3><p>Pick a day and time that suits you on our booking calendar. It takes a minute, and you'll get a confirmation by email.</p><p><a class="btn btn-ghost" href="${BOOKING_URL}" target="_blank" rel="noopener">Book a time</a></p></div>
   </div>
   <h2 style="margin-top:40px">What makes a good photo</h2>
   <ul class="prose">
